@@ -6,3 +6,21 @@
 @media(max-width:370px){.day{height:63px;padding:7px}.day-count{font-size:7px}.calendar{padding:14px}.hero-art{display:none}.brand small{letter-spacing:.8px}.brand{font-size:13px}.mini-date{display:none}.calendar-legend{gap:9px}.teacher-tab{padding:11px 8px}}
 label.section-label{display:block}input,select{width:100%;min-height:46px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--cream);color:var(--ink);font-size:13px}input::placeholder{color:#9baaa2}input:focus,select:focus{border-color:var(--accent)}.login-input{margin-top:0}.slot .icon svg{width:16px;height:16px}.slot-label{max-width:225px;line-height:1.5;overflow-wrap:anywhere}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+.welcome{position:relative;isolation:isolate;max-width:620px;margin:clamp(32px,8vh,95px) auto;padding:32px 24px 60px}
+.welcome h1{font:normal clamp(2.3rem,6vw,4.5rem)/1.05 Georgia,serif;letter-spacing:-.045em;margin:0;overflow-wrap:anywhere}
+.welcome h1 span{color:#24796e}.welcome p{line-height:1.6;margin:18px 0 30px}
+.abc{position:absolute;right:8px;top:-26px;color:#36796d;opacity:.12;transform:rotate(-9deg);font:italic 36px Georgia,serif;pointer-events:none}
+.tutor-list{display:grid;gap:14px}.tutor-choice{display:flex;align-items:center;gap:20px;width:100%;padding:16px 20px;background:#fff;border:1px solid #d8e5de;border-radius:20px;color:#194c46;text-align:left;font:600 clamp(18px,4vw,24px)/1.25 Georgia,serif;cursor:pointer}
+.tutor-choice:hover,.tutor-choice:focus-visible{background:#edf6f2;border-color:#458477}.tutor-choice>svg{margin-left:auto;width:20px;height:20px}
+.portrait{width:70px;height:70px;flex:none;border-radius:50%;background:#d8ebe3;color:#31695d;position:relative;overflow:hidden;display:grid;place-items:center;font:italic 34px Georgia,serif}
+.tutor-choice:nth-child(2) .portrait{background:#ede4ef;color:#735878}.portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+body::after{content:"vensolee";position:fixed;right:10px;bottom:4px;font:italic 17px Georgia,serif;color:#41766e;opacity:.32;pointer-events:none;z-index:1}
+
+.tutor-choice .portrait,.profile-edit img{box-sizing:border-box;border:3px solid #258f81}
+.tutor-choice[data-teacher="alina"] .portrait,.profile-edit[data-teacher="alina"] img{border-color:#885b42}
+.avatar.group-sofia{color:#125f54;background:#ccebe4}.avatar.group-alina{color:#8f2738;background:#f9d8dc}
+.profile-edit{display:flex;gap:16px;align-items:center;margin:20px 0}.profile-edit img{width:64px;height:64px;border-radius:50%;object-fit:cover}
+.upload-photo{display:block;position:relative;color:#23675b;text-decoration:underline;cursor:pointer;padding:6px 0}
+.upload-photo input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.upload-photo:focus-within{outline:2px solid currentColor}.portrait img[hidden]{display:none}

@@ -71,7 +71,7 @@ export class DemoApi {
     if (!slot.open || slot.bookingId) throw new Error('Это окошко уже занято или закрыто.');
     const start = Date.parse(slot.startsAt);
     if (start <= this.now()) throw new Error('Это время уже прошло.');
-    if (slot.date > '2026-11-30') throw new Error('Запись открыта только до 30 ноября.');
+    if (slot.date > '2027-05-31') throw new Error('Запись открыта только до 31 мая 2027 года.');
     if (user.role !== 'teacher') {
       if (slot.date <= dayInMinsk(this.now())) throw new Error('На сегодня запись закрыта. Выберите завтрашний день или позднее.');
       if (start > this.now() + 7 * DAY) throw new Error('Запись открывается ровно за 7 суток до начала занятия.');
@@ -92,7 +92,9 @@ export class DemoApi {
         if (user.role === 'teacher') out.studentId = slot.studentId;
         return out;
       }).sort((a, b) => a.startsAt.localeCompare(b.startsAt) || a.teacherId.localeCompare(b.teacherId)) };
-    if (user.role === 'teacher') result.students = this.data.students.map(({ id, name, active }) => ({ id, name, active }));
+    result.portraits = this.data.portraits || {};
+    result.user.owner = this.data.students.find(s => s.id === user.id)?.owner || 'main';
+    if (user.role === 'teacher') result.students = this.data.students.map(({ id, name, active, owner = 'main' }) => ({ id, name, active, owner }));
     return result;
   }
   async call(action, payload = {}, session_token = null) {
@@ -135,9 +137,17 @@ export class DemoApi {
       this.requireTeacher(user);
       const name = String(payload.name || '').trim();
       if (name.length < 1 || name.length > 80) throw new Error('Введите имя ученика, не более 80 символов.');
-      const student = { id: id(), name, active: true, code: `DEMO-${id().slice(0, 8).toUpperCase()}` };
+      const owner = payload.owner ?? 'main';
+      if (!['main','alina'].includes(owner)) throw new Error('Выберите репетитора.');
+      const student = { id: id(), name, owner, active: true, code: `DEMO-${id().slice(0, 8).toUpperCase()}` };
       this.data.students.push(student);
       result = { student: { id: student.id, name, active: true }, code: student.code };
+    } else if (action === 'set_portrait') {
+      this.requireTeacher(user);
+      if (!['main','alina'].includes(payload.teacherId) || !/^data:image\/jpeg;base64,\/9j\/[A-Za-z0-9+/=]+$/.test(payload.photo) || payload.photo.length > 320000)
+        throw new Error('Проверьте фотографию.');
+      this.data.portraits ||= {};
+      this.data.portraits[payload.teacherId] = payload.photo;
     } else if (action === 'reset_code') {
       this.requireTeacher(user);
       const student = this.data.students.find(s => s.id === payload.studentId);
@@ -153,7 +163,7 @@ export class DemoApi {
       if (!student.active) for (const [token, session] of Object.entries(this.data.sessions)) if (session.user.id === student.id) delete this.data.sessions[token];
     } else if (action === 'add_slot') {
       this.requireTeacher(user);
-      if (!['main', 'alina'].includes(payload.teacherId) || !/^2026-11-(1[7-9]|2\d|30)$/.test(payload.date || '') || !/^([01]\d|2[0-3]):[0-5]\d$/.test(payload.time || '')) throw new Error('Проверьте преподавателя, дату и время. Доступно 17–30 ноября.');
+      if (!['main', 'alina'].includes(payload.teacherId) || !/^\d{4}-\d{2}-\d{2}$/.test(payload.date || '') || payload.date < '2026-11-17' || payload.date > '2027-05-31' || !Number.isFinite(Date.parse(payload.date)) || new Date(payload.date).toISOString().slice(0,10) !== payload.date || !/^([01]\d|2[0-3]):[0-5]\d$/.test(payload.time || '')) throw new Error('Проверьте преподавателя, дату и время. Доступно до 31 мая 2027 года.');
       const start = Date.parse(`${payload.date}T${payload.time}:00+03:00`);
       if (start <= this.now()) throw new Error('Нельзя добавить прошедшее время.');
       if (this.data.slots.some(s => s.teacherId === payload.teacherId && Date.parse(s.startsAt) < start + HOUR && Date.parse(s.endsAt) > start)) throw new Error('Время пересекается с другим занятием этого преподавателя.');
